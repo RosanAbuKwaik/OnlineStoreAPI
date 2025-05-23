@@ -1,0 +1,1261 @@
+{
+	"info": {
+		"_postman_id": "4b811311-b9aa-425b-8c45-23c5c0ae180a",
+		"name": "Cart",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "29993407",
+		"_collection_link": "https://team77-1590.postman.co/workspace/d5e3a620-9bb1-48e9-aefb-359a3b70e166/collection/42595855-4b811311-b9aa-425b-8c45-23c5c0ae180a?action=share&source=collection_link&creator=29993407"
+	},
+	"item": [
+		{
+			"name": "Get All Cart Items",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const jsonData = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response body is an array and not empty\", function () {\r",
+							"    pm.expect(jsonData).to.be.an(\"array\").and.not.to.be.empty;\r",
+							"});\r",
+							"\r",
+							"const schemItem = {\r",
+							"  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\r",
+							"  \"type\": \"object\",\r",
+							"  \"properties\": {\r",
+							"    \"id\": { \"type\": \"integer\" },\r",
+							"    \"userId\": { \"type\": \"integer\" },\r",
+							"    \"date\": { \"type\": \"string\", \"format\": \"date-time\" },\r",
+							"    \"products\": {\r",
+							"      \"type\": \"array\",\r",
+							"      \"items\": {\r",
+							"        \"type\": \"object\",\r",
+							"        \"properties\": {\r",
+							"          \"productId\": { \"type\": \"integer\" },\r",
+							"          \"quantity\": { \"type\": \"integer\", \"minimum\": 1 }\r",
+							"        },\r",
+							"        \"required\": [\"productId\", \"quantity\"]\r",
+							"      }\r",
+							"    },\r",
+							"    \"__v\": { \"type\": \"integer\" }\r",
+							"  },\r",
+							"  \"required\": [\"id\", \"userId\", \"date\", \"products\", \"__v\"]\r",
+							"};\r",
+							"\r",
+							"\r",
+							"pm.test(\"Validate each item json schema in the response\", function () {\r",
+							"    jsonData.forEach((item) => {\r",
+							"        pm.expect(tv4.validate(item, schemItem)).to.be.true;\r",
+							"    });\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Validate that the user 1 has orders\", function () {\r",
+							"\r",
+							"    let userOrders = jsonData.filter(order => order.userId === 1);\r",
+							"    pm.expect(userOrders.length).to.be.greaterThan(0);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Validate that orders exist in date range\", function () {\r",
+							"    let jsonData = pm.response.json();\r",
+							"    let ordersInRange = jsonData.filter(order => {\r",
+							"        let orderDate = new Date(order.date);\r",
+							"        return orderDate >= new Date(\"2020-03-01\") && orderDate <= new Date(\"2020-03-02\");\r",
+							"    });\r",
+							"\r",
+							"    pm.expect(ordersInRange.length).to.be.greaterThan(0);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Validate the first item in the array has the correct properties\", function () {\r",
+							"    const firstItem = jsonData[0];\r",
+							"    pm.expect(firstItem).to.have.property(\"id\");\r",
+							"    pm.expect(firstItem).to.have.property(\"userId\");\r",
+							"    pm.expect(firstItem).to.have.property(\"date\");\r",
+							"    pm.expect(firstItem).to.have.property(\"products\");\r",
+							"    pm.expect(firstItem).to.have.property(\"__v\");\r",
+							"});                                 \r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseurl}}carts",
+					"host": [
+						"{{baseurl}}carts"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Single Cart Item",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const jsonData = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Validate that the item was returned the correct one\", function(){\r",
+							"    pm.expect(Number(jsonData.id)).to.eql(Number(pm.collectionVariables.get(\"Cart_id\")));\r",
+							"});\r",
+							"\r",
+							"const schema =  {\r",
+							"    \"id\": 1,\r",
+							"    \"userId\": 1,\r",
+							"    \"date\": \"2020-03-02T00:00:00.000Z\",\r",
+							"    \"products\": [\r",
+							"        {\r",
+							"            \"productId\": 1,\r",
+							"            \"quantity\": 4\r",
+							"        },\r",
+							"        {\r",
+							"            \"productId\": 2,\r",
+							"            \"quantity\": 1\r",
+							"        },\r",
+							"        {\r",
+							"            \"productId\": 3,\r",
+							"            \"quantity\": 6\r",
+							"        }\r",
+							"    ],\r",
+							"    \"__v\": 0\r",
+							"} \r",
+							"\r",
+							"pm.test(\"Validate the schema of the response was the correct one\",function(){\r",
+							"    pm.expect(jsonData).to.have.jsonSchema(schema);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Validate that the response is an object and not empty\",function(){\r",
+							"   pm.expect(jsonData).to.not.be.empty;\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Validate that the response has all required fields\", function () {\r",
+							"    pm.expect(jsonData).to.have.property(\"id\");\r",
+							"    pm.expect(jsonData).to.have.property(\"userId\");\r",
+							"    pm.expect(jsonData).to.have.property(\"date\");\r",
+							"    pm.expect(jsonData).to.have.property(\"products\");\r",
+							"    pm.expect(jsonData).to.have.property(\"__v\");\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Validate that the 'id' and 'userId' are integers\", function () {\r",
+							"    pm.expect(jsonData.id).to.be.a(\"number\");\r",
+							"    pm.expect(jsonData.userId).to.be.a(\"number\");\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Validate that the date is in the correct format\", function () {\r",
+							"    let date = /^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$/;\r",
+							"    pm.expect(jsonData.date).to.match(date);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Validate that the user Response is an object and not empty\",function(){\r",
+							"    pm.expect(jsonData.products).to.be.an('array').that.is.not.empty;       \r",
+							"});\r",
+							"\r",
+							"pm.test(\"Validate that the response has all required fields\",function(){\r",
+							"    pm.expect(jsonData).to.have.property(\"id\");\r",
+							"    pm.expect(jsonData).to.have.property(\"userId\");\r",
+							"    pm.expect(jsonData).to.have.property(\"date\");\r",
+							"    pm.expect(jsonData).to.have.property(\"products\");\r",
+							"    pm.expect(jsonData).to.have.property(\"__v\");\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Validate that the products array have three items\",function(){\r",
+							"    pm.expect(jsonData.products).to.have.lengthOf(3);\r",
+							"});\r",
+							"\r",
+							"const id = pm.collectionVariables.get(\"Cart_id\");\r",
+							"\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"userId\":\"{{user_id}}\",\r\n  \"date\":\"{{date}}\",\r\n  \"products\":\r\n  [\r\n  {\r\n  \"productId\":{{product_id}},\r\n  \"quantity\":{{quantity}}\r\n  }\r\n  ]\r\n }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseurl}}carts/{{Cart_id}}",
+					"host": [
+						"{{baseurl}}carts"
+					],
+					"path": [
+						"{{Cart_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Limited Cart Items",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let jsonData = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Validate that the response is an array\", function () {\r",
+							"    pm.expect(jsonData).to.be.an(\"array\");\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Validate that the response array is not empty\", function () {\r",
+							"    pm.expect(jsonData.length).to.be.greaterThan(0);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Validate that the object in the array has all required fields\", function () {\r",
+							"    jsonData.forEach(item => {\r",
+							"        pm.expect(item).to.have.property(\"id\");\r",
+							"        pm.expect(item).to.have.property(\"userId\");\r",
+							"        pm.expect(item).to.have.property(\"date\");\r",
+							"        pm.expect(item).to.have.property(\"products\");\r",
+							"        pm.expect(item).to.have.property(\"__v\");\r",
+							"    });\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Validate that the 'id' and 'userId' are integers\", function () {\r",
+							"    jsonData.forEach(item => {\r",
+							"        pm.expect(item.id).to.be.a(\"number\");\r",
+							"        pm.expect(item.userId).to.be.a(\"number\");\r",
+							"    });\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Validate that the 'date' is in correct format\", function () {\r",
+							"    let dateRegex = /^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$/;\r",
+							"    jsonData.forEach(item => {\r",
+							"        pm.expect(item.date).to.match(dateRegex);\r",
+							"    });\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Validate that the products is an array and not empty\", function () {\r",
+							"    jsonData.forEach(item => {\r",
+							"        pm.expect(item.products).to.be.an(\"array\").that.is.not.empty;\r",
+							"    });\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Validate that each product has 'productId' and 'quantity'\", function () {\r",
+							"    jsonData.forEach(item => {\r",
+							"        item.products.forEach(product => {\r",
+							"            pm.expect(product).to.have.property(\"productId\");\r",
+							"            pm.expect(product).to.have.property(\"quantity\");\r",
+							"            pm.expect(product.productId).to.be.a(\"number\");\r",
+							"            pm.expect(product.quantity).to.be.a(\"number\").that.is.greaterThan(0);\r",
+							"        });\r",
+							"    });\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Validate that the number of returned cart items matches the limit\",function(){\r",
+							"    pm.expect(jsonData.length).to.equal(parseInt(pm.collectionVariables.get(\"limit\")));\r",
+							"});\r",
+							"\r",
+							"const schema = {\r",
+							"    type: \"array\",\r",
+							"    items: {\r",
+							"        type: \"object\",\r",
+							"        required: [\"id\", \"userId\", \"date\", \"products\", \"__v\"],\r",
+							"        properties: {\r",
+							"            id: { type: \"number\" },\r",
+							"            userId: { type: \"number\" },\r",
+							"            date: { type: \"string\", format: \"date-time\" },\r",
+							"            products: {\r",
+							"                type: \"array\",\r",
+							"                items: {\r",
+							"                    type: \"object\",\r",
+							"                    required: [\"productId\", \"quantity\"],\r",
+							"                    properties: {\r",
+							"                        productId: { type: \"number\" },\r",
+							"                        quantity: { type: \"number\", minimum: 1 }\r",
+							"                    }\r",
+							"                }\r",
+							"            },\r",
+							"            __v: { type: \"number\" }\r",
+							"        }\r",
+							"    }\r",
+							"};\r",
+							"\r",
+							"pm.test(\"Validate response schema with JSON Schema\", function () {\r",
+							"    pm.expect(jsonData).to.have.jsonSchema(schema);\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseurl}}carts?limit={{limit}}",
+					"host": [
+						"{{baseurl}}carts"
+					],
+					"query": [
+						{
+							"key": "limit",
+							"value": "{{limit}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Sorted Cart Items",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Import the JSON response\r",
+							"const jsonData = pm.response.json();\r",
+							"\r",
+							"// Removed duplicate declaration of jsonData\r",
+							"pm.test(\"Validate that the  product IDs are sorted\", () => {\r",
+							"    jsonData.forEach(cart => {\r",
+							"        const productIds = cart.products.map(product => product.productId);\r",
+							"        const sortedProducts = [...productIds].sort((a, b) => a - b);\r",
+							"    });\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Validate that each cart has products\", function () {\r",
+							"    pm.expect(jsonData.forEach(cart => {\r",
+							"        pm.expect(cart.products.length).to.be.greaterThan(0);\r",
+							"    }));\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Validate that  the total number of carts is correct\", function () {\r",
+							"    pm.expect(jsonData.length).to.equal(7); \r",
+							"});\r",
+							"\r",
+							"pm.test(\"Validate the each cart has required fields\", function () {\r",
+							"    jsonData.forEach(cart => {\r",
+							"        pm.expect(cart).to.have.property(\"id\").that.is.a(\"number\");\r",
+							"        pm.expect(cart).to.have.property(\"userId\").that.is.a(\"number\");\r",
+							"        pm.expect(cart).to.have.property(\"date\").that.is.a(\"string\");\r",
+							"        pm.expect(cart).to.have.property(\"products\").that.is.an(\"array\");\r",
+							"        pm.expect(cart).to.have.property(\"__v\").that.is.a(\"number\");\r",
+							"    });\r",
+							"});\r",
+							"\r",
+							"// Define the JSON Schema\r",
+							"const schema = {\r",
+							"    type: \"array\",\r",
+							"    items: {\r",
+							"        type: \"object\",\r",
+							"        required: [\"id\", \"userId\", \"date\", \"products\", \"__v\"],\r",
+							"        properties: {\r",
+							"            id: { type: \"integer\" },\r",
+							"            userId: { type: \"integer\" },\r",
+							"            date: { type: \"string\", format: \"date-time\" },\r",
+							"            products: {\r",
+							"                type: \"array\",\r",
+							"                items: {\r",
+							"                    type: \"object\",\r",
+							"                    required: [\"productId\", \"quantity\"],\r",
+							"                    properties: {\r",
+							"                        productId: { type: \"integer\" },\r",
+							"                        quantity: { type: \"integer\", minimum: 1 }\r",
+							"                    }\r",
+							"                }\r",
+							"            },\r",
+							"            __v: { type: \"integer\" }\r",
+							"        }\r",
+							"    }\r",
+							"};\r",
+							"\r",
+							"pm.test(\"Validate that the response matches the expected JSON schema\", () => {\r",
+							"     pm.expect(jsonData).to.have.jsonSchema(schema); \r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Validate that the response should be an array\", () => {\r",
+							"    pm.expect(jsonData).to.be.an(\"array\");\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Validate that the response array should have 7 items\", () => {\r",
+							"    pm.expect(jsonData.length).to.equal(7);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"\r",
+							"pm.test(\"Validate that there is the cart object should have required properties\", () => {\r",
+							"    jsonData.forEach(cart => {\r",
+							"        pm.expect(cart).to.have.property(\"id\").that.is.a(\"number\");\r",
+							"        pm.expect(cart).to.have.property(\"userId\").that.is.a(\"number\");\r",
+							"        pm.expect(cart).to.have.property(\"date\").that.is.a(\"string\");\r",
+							"        pm.expect(cart).to.have.property(\"products\").that.is.an(\"array\");\r",
+							"        pm.expect(cart).to.have.property(\"__v\").that.is.a(\"number\");\r",
+							"    });\r",
+							"});\r",
+							"\r",
+							"\r",
+							"\r",
+							"pm.test(\"Validate that each product should have required properties\", () => {\r",
+							"    jsonData.forEach(cart => {\r",
+							"        cart.products.forEach(product => {\r",
+							"            pm.expect(product).to.have.property(\"productId\").that.is.a(\"number\");\r",
+							"            pm.expect(product).to.have.property(\"quantity\").that.is.a(\"number\").and.to.be.above(0);\r",
+							"        });\r",
+							"    });\r",
+							"});\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseurl}}carts?sort={{sort}}",
+					"host": [
+						"{{baseurl}}carts"
+					],
+					"query": [
+						{
+							"key": "sort",
+							"value": "{{sort}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Cart Items in Date Range",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const jsonData = pm.response.json();\r",
+							"\r",
+							"\r",
+							"const schema = {\r",
+							"    type: \"array\",\r",
+							"    items: {\r",
+							"        type: \"object\",\r",
+							"        required: [\"id\", \"userId\", \"date\", \"products\", \"__v\"],\r",
+							"        properties: {\r",
+							"            id: { type: \"integer\" },\r",
+							"            userId: { type: \"integer\" },\r",
+							"            date: { type: \"string\", format: \"date-time\" },\r",
+							"            products: {\r",
+							"                type: \"array\",\r",
+							"                items: {\r",
+							"                    type: \"object\",\r",
+							"                    required: [\"productId\", \"quantity\"],\r",
+							"                    properties: {\r",
+							"                        productId: { type: \"integer\" },\r",
+							"                        quantity: { type: \"integer\", minimum: 1 }\r",
+							"                    }\r",
+							"                }\r",
+							"            },\r",
+							"            __v: { type: \"integer\" }\r",
+							"        }\r",
+							"    }\r",
+							"};\r",
+							"\r",
+							"pm.test(\"Validate that the response matches the expected JSON schema\", () => {\r",
+							"    pm.expect(jsonData).to.have.jsonSchema(schema);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Validate that the resposne is an array and not empty\",()=>{\r",
+							"    pm.expect(jsonData).to.be.an('array').and.to.have.length.above(0);\r",
+							"})\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							"pm.test(\"Validate that each product should have required properties\", () => {\r",
+							"    jsonData.forEach(cart => {\r",
+							"        cart.products.forEach(product => {\r",
+							"            pm.expect(product).to.have.property(\"productId\").that.is.a(\"number\");\r",
+							"            pm.expect(product).to.have.property(\"quantity\").that.is.a(\"number\").and.to.be.above(0);\r",
+							"        });\r",
+							"    });\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Validate that the cart IDs should be unique\", () => {\r",
+							"    const ids = jsonData.map(cart => cart.id);\r",
+							"    const uniqueIds = [...new Set(ids)];\r",
+							"    pm.expect(ids.length).to.equal(uniqueIds.length);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Validate that each cart should have at least one product\", () => {\r",
+							"    jsonData.forEach(cart => {\r",
+							"        pm.expect(cart.products.length).to.be.greaterThan(0);\r",
+							"    });\r",
+							"});\r",
+							"\r",
+							"\r",
+							"\r",
+							"const startDate = new Date(\"2020-01-01\");\r",
+							"const endDate = new Date(\"2020-01-02\");\r",
+							"\r",
+							"\r",
+							"pm.test(\"Validate that all carts should have dates within the range\", () => {\r",
+							"    jsonData.forEach(cart => {\r",
+							"        const cartDate = new Date(cart.date);\r",
+							"        pm.expect(cartDate >= startDate && cartDate <= endDate).to.be.true;\r",
+							"  });\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Each cart object should have required properties\", () => {\r",
+							"    jsonData.forEach(cart => {\r",
+							"        pm.expect(cart).to.have.property(\"id\").that.is.a(\"number\");\r",
+							"        pm.expect(cart).to.have.property(\"userId\").that.is.a(\"number\");\r",
+							"        pm.expect(cart).to.have.property(\"date\").that.is.a(\"string\");\r",
+							"        pm.expect(cart).to.have.property(\"products\").that.is.an(\"array\");\r",
+							"        pm.expect(cart).to.have.property(\"__v\").that.is.a(\"number\");\r",
+							"    });\r",
+							"});\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseurl}}carts?startdate=2020-01-01&enddate=2020-01-30",
+					"host": [
+						"{{baseurl}}carts"
+					],
+					"query": [
+						{
+							"key": "startdate",
+							"value": "2020-01-01"
+						},
+						{
+							"key": "enddate",
+							"value": "2020-01-30"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get User-Specific Cart Items",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const jsonData = pm.response.json();\r",
+							"\r",
+							"// Check if the response is an array\r",
+							"pm.test('Validate that the response is an array', function () {\r",
+							"    pm.expect(Array.isArray(jsonData)).to.be.true;\r",
+							"});\r",
+							"pm.test(\"Validate that all cart items belong to the specified user\", () => {\r",
+							"    const user_id = Number(pm.collectionVariables.get(\"user_id\"));\r",
+							"\r",
+							"    jsonData.forEach((cart, index) => {\r",
+							"        pm.expect(cart.userId, `Cart at index ${index} does not belong to user ${user_id}`).to.eql(user_id);\r",
+							"    });\r",
+							"});\r",
+							"\r",
+							"\r",
+							"\r",
+							"pm.test(\"Validate each order has 3 products\", function () {\r",
+							"    jsonData.forEach((item, index) => {\r",
+							"        pm.expect(item.products.length, `Order at index ${index} should have 3 products`).to.equal(3);\r",
+							"    });\r",
+							"});\r",
+							"\r",
+							"\r",
+							"\r",
+							"pm.test(\"Validate that the correct User ID\", function () {\r",
+							"    jsonData.forEach(cart => {\r",
+							"        pm.expect(cart.userId).to.eql(parseInt(pm.variables.get(\"user_id\")));\r",
+							"    });\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Validate that cart Contains Products\", function () {\r",
+							"    jsonData.forEach(cart => {\r",
+							"        pm.expect(cart.products).to.be.an(\"array\").that.is.not.empty;\r",
+							"    });\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Validate that each Product Has Valid Quantity\", function () {\r",
+							"    jsonData.forEach(cart => {\r",
+							"        cart.products.forEach(product => {\r",
+							"            pm.expect(product).to.have.property(\"quantity\").that.is.a(\"number\").above(0);\r",
+							"        });\r",
+							"    });\r",
+							"});\r",
+							"\r",
+							"const schema = {\r",
+							"    \"type\": \"array\",\r",
+							"    \"items\": {\r",
+							"        \"type\": \"object\",\r",
+							"        \"properties\": {\r",
+							"            \"id\": { \"type\": \"number\" },\r",
+							"            \"userId\": { \"type\": \"number\" },\r",
+							"            \"date\": { \"type\": \"string\", \"format\": \"date-time\" },\r",
+							"            \"products\": {\r",
+							"                \"type\": \"array\",\r",
+							"                \"items\": {\r",
+							"                    \"type\": \"object\",\r",
+							"                    \"properties\": {\r",
+							"                        \"productId\": { \"type\": \"number\" },\r",
+							"                        \"quantity\": { \"type\": \"number\" }\r",
+							"                    },\r",
+							"                    \"required\": [\"productId\", \"quantity\"]\r",
+							"                }\r",
+							"            },\r",
+							"            \"__v\": { \"type\": \"number\" }\r",
+							"        },\r",
+							"        \"required\": [\"id\", \"userId\", \"date\", \"products\", \"__v\"]\r",
+							"    }\r",
+							"};\r",
+							"\r",
+							"pm.test(\"Response matches the expected schema\", function () {\r",
+							"    pm.response.to.have.jsonSchema(schema);\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.collectionVariables.set(\"user_id\", 1);\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseurl}}carts/user/{{user_id}}",
+					"host": [
+						"{{baseurl}}carts"
+					],
+					"path": [
+						"user",
+						"{{user_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add to Cart",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200 or 201\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"var jsonData = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Response is an object\", function () {\r",
+							"    pm.expect(jsonData).to.be.an(\"object\");\r",
+							"});\r",
+							"\r",
+							"// 3. ID exists and is correct\r",
+							"pm.test(\"Cart ID is 11\", function () {\r",
+							"    pm.expect(jsonData.id).to.eql(11);\r",
+							"});\r",
+							"\r",
+							"// 4. userId exists and is correct\r",
+							"pm.test(\"User ID is 1\", function () {\r",
+							"    pm.expect(Number(jsonData.userId)).to.eql(1); // or \"1\" if your API keeps it as string\r",
+							"});\r",
+							"\r",
+							"\r",
+							"\r",
+							"// 6. Products array exists and is not empty\r",
+							"pm.test(\"Products array exists and is not empty\", function () {\r",
+							"    pm.expect(jsonData.products).to.be.an(\"array\").that.is.not.empty;\r",
+							"});\r",
+							"\r",
+							"// 7. Each product has productId and quantity\r",
+							"pm.test(\"Each product has productId and quantity\", function () {\r",
+							"    jsonData.products.forEach(product => {\r",
+							"        pm.expect(product).to.have.property(\"productId\");\r",
+							"        pm.expect(product).to.have.property(\"quantity\");\r",
+							"    });\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"userId\":\"{{user_id}}\",\r\n  \"date\":\"{{date}}\",\r\n  \"products\":\r\n  [\r\n  {\r\n  \"productId\":{{product_id}},\r\n  \"quantity\":{{quantity}}\r\n  }\r\n  ]\r\n }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseurl}}carts",
+					"host": [
+						"{{baseurl}}carts"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Cart",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", () => {\r",
+							"    pm.response.to.have.status(200); \r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Validate response body matches request body\", () => {\r",
+							"    const requestBody = {\r",
+							"        userId: parseInt(pm.variables.get(\"user_id\")), \r",
+							"        date: pm.variables.get(\"date\"), \r",
+							"        products: [\r",
+							"            {\r",
+							"                productId: parseInt(pm.variables.get(\"product_id\")), \r",
+							"                quantity: parseInt(pm.variables.get(\"quantity\"))             }\r",
+							"        ]\r",
+							"    };\r",
+							"\r",
+							"    const jsonData = pm.response.json(); \r",
+							"\r",
+							"    pm.expect(jsonData.userId).to.eql(requestBody.userId);\r",
+							"    pm.expect(jsonData.date).to.eql(requestBody.date);\r",
+							"    pm.expect(jsonData.products.length).to.eql(requestBody.products.length);\r",
+							"    jsonData.products.forEach((product, index) => {\r",
+							"        pm.expect(product.productId).to.eql(requestBody.products[index].productId);\r",
+							"        pm.expect(product.quantity).to.eql(requestBody.products[index].quantity);\r",
+							"    });\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Validate response schema\", () => {\r",
+							"    const schema = {\r",
+							"        type: \"object\",\r",
+							"        required: [\"id\", \"userId\", \"date\", \"products\"],\r",
+							"        properties: {\r",
+							"            id: { type: \"number\" },\r",
+							"            userId: { type: \"number\" },\r",
+							"            date: { type: \"string\" },\r",
+							"            products: {\r",
+							"                type: \"array\",\r",
+							"                items: {\r",
+							"                    type: \"object\",\r",
+							"                    required: [\"productId\", \"quantity\"],\r",
+							"                    properties: {\r",
+							"                        productId: { type: \"number\" },\r",
+							"                        quantity: { type: \"number\" }\r",
+							"                    }\r",
+							"                }\r",
+							"            }\r",
+							"        }\r",
+							"    };\r",
+							"\r",
+							"    pm.response.to.have.jsonSchema(schema);\r",
+							"\r",
+							"pm.test(\"Validate required fields in the response\", () => {\r",
+							"    const jsonData = pm.response.json();\r",
+							"\r",
+							"    pm.expect(jsonData).to.have.property(\"id\");\r",
+							"    pm.expect(jsonData).to.have.property(\"userId\");\r",
+							"    pm.expect(jsonData).to.have.property(\"date\");\r",
+							"    pm.expect(jsonData).to.have.property(\"products\");\r",
+							"    pm.expect(jsonData.products).to.be.an(\"array\");\r",
+							"});\r",
+							"pm.test(\"Validate field types in the response\", () => {\r",
+							"    const jsonData = pm.response.json();\r",
+							"\r",
+							"    pm.expect(jsonData.id).to.be.a(\"number\");\r",
+							"    pm.expect(jsonData.userId).to.be.a(\"number\");\r",
+							"    pm.expect(jsonData.date).to.be.a(\"string\");\r",
+							"    pm.expect(jsonData.products).to.be.an(\"array\");\r",
+							"\r",
+							"    jsonData.products.forEach(product => {\r",
+							"        pm.expect(product.productId).to.be.a(\"number\");\r",
+							"        pm.expect(product.quantity).to.be.a(\"number\");\r",
+							"    });\r",
+							"});\r",
+							"pm.test(\"Validate that the products array is not empty\", () => {\r",
+							"    const jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.products).to.be.an(\"array\").that.is.not.empty;\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Validate response ID is a positive number\", () => {\r",
+							"    const jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.id).to.be.a(\"number\").and.to.be.greaterThan(0);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Validate that No duplicate products in the response\", () => {\r",
+							"    const jsonData = pm.response.json();\r",
+							"    const productIds = jsonData.products.map(product => product.productId);\r",
+							"\r",
+							"    const uniqueProductIds = new Set(productIds);\r",
+							"    pm.expect(uniqueProductIds.size).to.eql(productIds.length); // Check that all product IDs are unique\r",
+							"});\r",
+							"\r",
+							"\r",
+							"\r",
+							"pm.test(\"Validate product quantity range\", () => {\r",
+							"    const jsonData = pm.response.json();\r",
+							"\r",
+							"    jsonData.products.forEach(product => {\r",
+							"        pm.expect(product.quantity).to.be.a(\"number\").that.is.within(1, 100);\r",
+							"    });\r",
+							"});\r",
+							"\r",
+							"\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"userId\":{{user_id}},\r\n  \"date\":\"{{date}}\",\r\n  \"products\":\r\n  [\r\n  {\r\n  \"productId\":{{product_id}},\r\n  \"quantity\":{{quantity}}\r\n  }\r\n  ]\r\n }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseurl}}carts/{{Cart_id}}",
+					"host": [
+						"{{baseurl}}carts"
+					],
+					"path": [
+						"{{Cart_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Partial Update Cart",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"console.log(\"Date Variable Before Request:\", pm.variables.get(\"date\"));\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"    const jsonData = pm.response.json(); \r",
+							"pm.test(\"Status code is 200\", () => {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"pm.test(\"Validate updated field contains expected value\", () => {\r",
+							"    const jsonData = pm.response.json();\r",
+							"    const expectedDate = pm.variables.get(\"date\");\r",
+							"    pm.expect(jsonData.date).to.include(expectedDate);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Validate response schema\", () => {\r",
+							"    const schema = {\r",
+							"        type: \"object\",\r",
+							"        required: [\"id\", \"date\"],\r",
+							"        properties: {\r",
+							"            id: { type: \"number\" },\r",
+							"            date: { \r",
+							"                type: \"string\", \r",
+							"                format: \"date\" \r",
+							"            }\r",
+							"        }\r",
+							"    };\r",
+							"\r",
+							"    pm.response.to.have.jsonSchema(schema);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Validate that the Response is an object and not empty\", () => {\r",
+							"    const jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData).to.be.an(\"object\"); \r",
+							"    pm.expect(Object.keys(jsonData).length).to.be.greaterThan(0); \r",
+							"});\r",
+							"\r",
+							"pm.test(\"Validate that 'id' field exists and is a number\", () => {\r",
+							"    pm.expect(jsonData).to.have.property(\"id\").that.is.a(\"number\");\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Validate only 'date' field is updated\", () => {\r",
+							"    const unchangedId = pm.variables.get(\"Cart_id\"); \r",
+							"    pm.expect(jsonData.id).to.eql(parseInt(unchangedId)); \r",
+							"\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Validate 'date' field format\", () => {\r",
+							"    const dateRegex = /^\\d{4}-\\d{2}-\\d{2}$/; \r",
+							"    pm.expect(jsonData.date).to.match(dateRegex); \r",
+							"});\r",
+							"\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"date\": \"2025-06-01\"\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseurl}}carts/{{Cart_id}}",
+					"host": [
+						"{{baseurl}}carts"
+					],
+					"path": [
+						"{{Cart_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "New Request",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const jsonData = pm.response.json(); \r",
+							"pm.test(\"Status code is 200\", () => {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"let deletedCartId = pm.variables.get(\"Cart_id\");\r",
+							"\r",
+							"pm.test(\"Validate deleted item ID matches request ID\", function () {\r",
+							"    pm.expect(jsonData.id.toString()).to.eql(deletedCartId.toString());\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Validate that the response is an object and not empty\", function () {\r",
+							"    const response = pm.response.json();\r",
+							"    pm.expect(response).to.be.an('object');\r",
+							"});\r",
+							"\r",
+							"const schema = {\r",
+							"    \"type\": \"object\",\r",
+							"    \"required\": [\"id\", \"userId\", \"date\", \"products\", \"__v\"],\r",
+							"    \"properties\": {\r",
+							"        \"id\": { \"type\": \"integer\" },\r",
+							"        \"userId\": { \"type\": \"integer\" },\r",
+							"        \"date\": { \"type\": \"string\", \"format\": \"date-time\" },\r",
+							"        \"products\": {\r",
+							"            \"type\": \"array\",\r",
+							"            \"items\": {\r",
+							"                \"type\": \"object\",\r",
+							"                \"required\": [\"productId\", \"quantity\"],\r",
+							"                \"properties\": {\r",
+							"                    \"productId\": { \"type\": \"integer\" },\r",
+							"                    \"quantity\": { \"type\": \"integer\" }\r",
+							"                }\r",
+							"            }\r",
+							"        },\r",
+							"        \"__v\": { \"type\": \"integer\" }\r",
+							"    }\r",
+							"};\r",
+							"\r",
+							"pm.test(\"Validate that the JSON Schema is valid\", function () {\r",
+							"    const response = pm.response.json();\r",
+							"    pm.expect(tv4.validate(response, schema)).to.be.true;\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Validate that the Response is valid and contains deleted ID\", function () {\r",
+							"    if (pm.response.code === 200) {\r",
+							"        pm.expect(jsonData).to.have.property(\"id\");\r",
+							"    }\r",
+							"});\r",
+							"\r",
+							"\r",
+							"\r",
+							"pm.test(\"Validate response data types\", function () {\r",
+							"    pm.expect(jsonData.id).to.be.a(\"number\");\r",
+							"    pm.expect(jsonData.userId).to.be.a(\"number\");\r",
+							"    pm.expect(jsonData.date).to.be.a(\"string\");\r",
+							"    pm.expect(jsonData.products).to.be.an(\"array\");\r",
+							"    pm.expect(jsonData.__v).to.be.a(\"number\");\r",
+							"});\r",
+							"\r",
+							"\r",
+							"\r",
+							"pm.test(\"Valiadte that Each product has required fields\", function () {\r",
+							"    jsonData.products.forEach((product) => {\r",
+							"        pm.expect(product).to.have.property(\"productId\");\r",
+							"        pm.expect(product).to.have.property(\"quantity\");\r",
+							"    });\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Validate that the Response contains the deleted ID\", function () {\r",
+							"    pm.expect(jsonData).to.have.property(\"id\");\r",
+							"});\r",
+							"\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"userId\":\"{{user_id}}\",\r\n  \"date\":\"{{date}}\",\r\n  \"products\":\r\n  [\r\n  {\r\n  \"productId\":{{product_id}},\r\n  \"quantity\":{{quantity}}\r\n  }\r\n  ]\r\n }\r\n\r\n\r\n\r\n\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseurl}}carts/{{Cart_id}}",
+					"host": [
+						"{{baseurl}}carts"
+					],
+					"path": [
+						"{{Cart_id}}"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "Cart_id",
+			"value": "1",
+			"type": "string"
+		},
+		{
+			"key": "User_id",
+			"value": "2",
+			"type": "string"
+		},
+		{
+			"key": "date",
+			"value": "2025-06-01",
+			"type": "string"
+		},
+		{
+			"key": "quantity",
+			"value": "2",
+			"type": "string"
+		},
+		{
+			"key": "limit",
+			"value": "4",
+			"type": "string"
+		},
+		{
+			"key": "sort",
+			"value": "asc",
+			"type": "string"
+		},
+		{
+			"key": "product_id",
+			"value": "1",
+			"type": "string"
+		},
+		{
+			"key": "user_id",
+			"value": ""
+		}
+	]
+}

@@ -1,0 +1,688 @@
+{
+	"info": {
+		"_postman_id": "f2064b7c-01c7-4d07-b6d8-e9511ec66ca5",
+		"name": "User",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "29993407",
+		"_collection_link": "https://team77-1590.postman.co/workspace/d5e3a620-9bb1-48e9-aefb-359a3b70e166/collection/29993407-f2064b7c-01c7-4d07-b6d8-e9511ec66ca5?action=share&source=collection_link&creator=29993407"
+	},
+	"item": [
+		{
+			"name": "Add a new user",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Validate that the Status code is 200\", function () {\r",
+							"  pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Validate that the Response contains id\", function () {\r",
+							"  pm.expect(pm.response.json()).to.have.property('id');\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Validate that the id is a valid number\", function () {\r",
+							"  const response = pm.response.json();\r",
+							"  pm.expect(response.id).to.be.a('number');\r",
+							"  pm.expect(response.id).to.be.above(0);\r",
+							"});\r",
+							"\r",
+							"const schema = {\r",
+							"  \"type\": \"object\",\r",
+							"  \"properties\": {\r",
+							"    \"id\": {\r",
+							"      \"type\": \"number\"\r",
+							"    }\r",
+							"  },\r",
+							"  \"required\": [\"id\"],\r",
+							"  \"additionalProperties\": false\r",
+							"};\r",
+							"\r",
+							"pm.test(\"Validate that the Response matches JSON Schema\", function () {\r",
+							"  pm.response.to.have.jsonSchema(schema);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Validate that the Response contains id\", function () {\r",
+							"  const response = pm.response.json();\r",
+							"  pm.expect(response).to.have.property('id');\r",
+							"  pm.expect(response.id).to.be.a('number');\r",
+							"  pm.expect(response.id).to.be.at.least(1);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Validate that the Request body contains all required fields\", function () {\r",
+							"  const requestBody = JSON.parse(pm.request.body.raw);\r",
+							"  pm.expect(requestBody).to.have.property('email');\r",
+							"  pm.expect(requestBody).to.have.property('username');\r",
+							"  pm.expect(requestBody).to.have.property('password');\r",
+							"  pm.expect(requestBody).to.have.property('name');\r",
+							"  pm.expect(requestBody).to.have.property('address');\r",
+							"  pm.expect(requestBody).to.have.property('phone');\r",
+							"  pm.expect(requestBody.name).to.have.all.keys('firstname', 'lastname');\r",
+							"  pm.expect(requestBody.address).to.have.all.keys('city', 'street', 'number', 'zipcode', 'geolocation');\r",
+							"  pm.expect(requestBody.address.geolocation).to.have.all.keys('lat', 'long');\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Validate that the Request body data types are correct\", function () {\r",
+							"  const requestBody = JSON.parse(pm.request.body.raw);\r",
+							"  pm.expect(requestBody.email).to.be.a('string');\r",
+							"  pm.expect(requestBody.username).to.be.a('string');\r",
+							"  pm.expect(requestBody.password).to.be.a('string');\r",
+							"  pm.expect(requestBody.phone).to.be.a('string');\r",
+							"  pm.expect(requestBody.name.firstname).to.be.a('string');\r",
+							"  pm.expect(requestBody.name.lastname).to.be.a('string');\r",
+							"  pm.expect(requestBody.address.city).to.be.a('string');\r",
+							"  pm.expect(requestBody.address.street).to.be.a('string');\r",
+							"  pm.expect(Number(requestBody.address.number)).to.be.a('number');\r",
+							"  pm.expect(requestBody.address.zipcode).to.be.a('string');\r",
+							"  pm.expect(requestBody.address.geolocation.lat).to.be.a('string');\r",
+							"  pm.expect(requestBody.address.geolocation.long).to.be.a('string');\r",
+							"});\r",
+							"\r",
+							"\r",
+							"\r",
+							"const jsonData = pm.response.json(); \r",
+							"\r",
+							"pm.test(\"Validate that the User ID is valid and greater than 0\", function () {\r",
+							"    pm.expect(jsonData.id).to.be.above(0);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"email\":\"{{email}}\",\r\n  \"username\":\"{{username}}\",\r\n  \"password\":\"{{password}}\",\r\n  \"name\":{\r\n  \"firstname\":\"{{firstname}}\",\r\n  \"lastname\":\"{{lastname}}\"\r\n  },\r\n  \"address\":{\r\n  \"city\":\"{{city}}\",\r\n  \"street\":\"{{street}}\",\r\n  \"number\":\"{{number}}\",\r\n  \"zipcode\":\"{{zipcode}}\",\r\n  \"geolocation\":{\r\n  \"lat\":\"{{lat}}\",\r\n  \"long\":\"{{long}}\"\r\n  }\r\n  },\r\n  \"phone\":\"{{phone}}\"\r\n }\r\n\r\n ",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseurl}}/users",
+					"host": [
+						"{{baseurl}}"
+					],
+					"path": [
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Single User",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseurl}}users/{{User_id}}",
+					"host": [
+						"{{baseurl}}users"
+					],
+					"path": [
+						"{{User_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get All Users",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const jsonSchema = {\r",
+							"  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\r",
+							"  \"type\": \"array\",\r",
+							"  \"items\": {\r",
+							"    \"type\": \"object\",\r",
+							"    \"properties\": {\r",
+							"      \"id\": { \"type\": \"number\" },\r",
+							"      \"email\": { \"type\": \"string\", \"format\": \"email\" },\r",
+							"      \"username\": { \"type\": \"string\" },\r",
+							"      \"password\": { \"type\": \"string\" },\r",
+							"      \"phone\": { \"type\": \"string\" },\r",
+							"      \"__v\": { \"type\": \"number\" },\r",
+							"      \"name\": {\r",
+							"        \"type\": \"object\",\r",
+							"        \"properties\": {\r",
+							"          \"firstname\": { \"type\": \"string\" },\r",
+							"          \"lastname\": { \"type\": \"string\" }\r",
+							"        },\r",
+							"        \"required\": [\"firstname\", \"lastname\"],\r",
+							"        \"additionalProperties\": false\r",
+							"      },\r",
+							"      \"address\": {\r",
+							"        \"type\": \"object\",\r",
+							"        \"properties\": {\r",
+							"          \"geolocation\": {\r",
+							"            \"type\": \"object\",\r",
+							"            \"properties\": {\r",
+							"              \"lat\": { \"type\": \"string\" },\r",
+							"              \"long\": { \"type\": \"string\" }\r",
+							"            },\r",
+							"            \"required\": [\"lat\", \"long\"],\r",
+							"            \"additionalProperties\": false\r",
+							"          },\r",
+							"          \"city\": { \"type\": \"string\" },\r",
+							"          \"street\": { \"type\": \"string\" },\r",
+							"          \"number\": { \"type\": \"number\" },\r",
+							"          \"zipcode\": { \"type\": \"string\" }\r",
+							"        },\r",
+							"        \"required\": [\"geolocation\", \"city\", \"street\", \"number\", \"zipcode\"],\r",
+							"        \"additionalProperties\": false\r",
+							"      }\r",
+							"    },\r",
+							"    \"required\": [\"id\", \"email\", \"username\", \"password\", \"phone\", \"__v\", \"name\", \"address\"],\r",
+							"    \"additionalProperties\": false\r",
+							"  }\r",
+							"};\r",
+							"\r",
+							"pm.test(\"Validate that the Response matches JSON Schema\", function () {\r",
+							"  pm.response.to.have.jsonSchema(jsonSchema);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"  pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Validate that the Response is an array\", function () {\r",
+							"  const response = pm.response.json();\r",
+							"  pm.expect(response).to.be.an('array');\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Validate that the array has at least one user\", function () {\r",
+							"  const response = pm.response.json();\r",
+							"  pm.expect(response.length).to.be.at.least(1);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Validate that the all user IDs are unique\", function () {\r",
+							"  const response = pm.response.json();\r",
+							"  const ids = response.map(user => user.id);\r",
+							"  const uniqueIds = new Set(ids);\r",
+							"  pm.expect(ids.length).to.equal(uniqueIds.size);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Validate that the Number of users matches expected\", function () {\r",
+							"  const response = pm.response.json();\r",
+							"  pm.expect(response.length).to.equal(10);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Validate that the Response is a non-empty array\", function () {\r",
+							"  const response = pm.response.json();\r",
+							"  pm.expect(response).to.be.an('array');\r",
+							"  pm.expect(response.length).to.be.at.least(1);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Validate that each user has required fields\", function () {\r",
+							"  const response = pm.response.json();\r",
+							"  response.forEach(user => {\r",
+							"    pm.expect(user).to.have.all.keys(\r",
+							"      'id', 'email', 'username', 'password', 'phone', '__v', 'name', 'address'\r",
+							"    );\r",
+							"  });\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Validate that the data types are correct\", function () {\r",
+							"  const response = pm.response.json();\r",
+							"  response.forEach(user => {\r",
+							"    pm.expect(user.id).to.be.a('number');\r",
+							"    pm.expect(user.email).to.be.a('string');\r",
+							"    pm.expect(user.username).to.be.a('string');\r",
+							"    pm.expect(user.password).to.be.a('string');\r",
+							"    pm.expect(user.phone).to.be.a('string');\r",
+							"    pm.expect(user.__v).to.be.a('number');\r",
+							"    pm.expect(user.name).to.be.an('object');\r",
+							"    pm.expect(user.address).to.be.an('object');\r",
+							"    pm.expect(user.name.firstname).to.be.a('string');\r",
+							"    pm.expect(user.name.lastname).to.be.a('string');\r",
+							"    pm.expect(user.address.geolocation).to.be.an('object');\r",
+							"    pm.expect(user.address.city).to.be.a('string');\r",
+							"    pm.expect(user.address.street).to.be.a('string');\r",
+							"    pm.expect(user.address.number).to.be.a('number');\r",
+							"    pm.expect(user.address.zipcode).to.be.a('string');\r",
+							"    pm.expect(user.address.geolocation.lat).to.be.a('string');\r",
+							"    pm.expect(user.address.geolocation.long).to.be.a('string');\r",
+							"  });\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseurl}}/users",
+					"host": [
+						"{{baseurl}}"
+					],
+					"path": [
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Partial Update User",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const jsonData = pm.response.json();\r",
+							"const requestBody = JSON.parse(pm.request.body.raw);\r",
+							"\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"//Email update check (if present in request)\r",
+							"\r",
+							"if (requestBody.email) {\r",
+							"    pm.test(\"Validate that the Email was updated\", function () {\r",
+							"        pm.expect(jsonData.email).to.eql(requestBody.email);\r",
+							"    });\r",
+							"}\r",
+							"// username update check (if present in request)\r",
+							"\r",
+							"if (requestBody.username) {\r",
+							"    pm.test(\"Validate that the Username was updated\", function () {\r",
+							"        pm.expect(jsonData.username).to.eql(requestBody.username);\r",
+							"    });\r",
+							"}\r",
+							"// name should be updated correctly if present on the request \r",
+							"if (requestBody.name) {\r",
+							"    //firstname should be updated correctly if present on the request \r",
+							"    if (requestBody.name.firstname) {\r",
+							"        pm.test(\"First name was updated\", function () {\r",
+							"            pm.expect(jsonData.name.firstname).to.eql(requestBody.name.firstname);\r",
+							"        });\r",
+							"    }\r",
+							"    //lastname should be updated correctly if present on the request \r",
+							"    if (requestBody.name.lastname) {\r",
+							"        pm.test(\"Last name was updated\", function () {\r",
+							"            pm.expect(jsonData.name.lastname).to.eql(requestBody.name.lastname);\r",
+							"        });\r",
+							"    }\r",
+							"}\r",
+							"//address should be updated correctly if present on the request \r",
+							"if (requestBody.address) {\r",
+							"    if (requestBody.address.city) {\r",
+							"        pm.test(\"City was updated\", function () {\r",
+							"            pm.expect(jsonData.address.city).to.eql(requestBody.address.city);\r",
+							"        });\r",
+							"    }\r",
+							"    //street should be updated correctly if present on the request \r",
+							"    if (requestBody.address.street) {\r",
+							"        pm.test(\"Street was updated\", function () {\r",
+							"            pm.expect(jsonData.address.street).to.eql(requestBody.address.street);\r",
+							"        });\r",
+							"    }\r",
+							"    //number should be updated correctly if present on the request \r",
+							"    if (requestBody.address.number) {\r",
+							"        pm.test(\"Address number was updated\", function () {\r",
+							"            pm.expect(jsonData.address.number.toString()).to.eql(requestBody.address.number.toString());\r",
+							"        });\r",
+							"    }\r",
+							"    //address zipcode  should be updated correctly if present on the request \r",
+							"    if (requestBody.address.zipcode) {\r",
+							"        pm.test(\"Zipcode was updated\", function () {\r",
+							"            pm.expect(jsonData.address.zipcode).to.eql(requestBody.address.zipcode);\r",
+							"        });\r",
+							"    }\r",
+							"    if (requestBody.address.geolocation) {\r",
+							"            //geolocation  should be updated correctly if present on the request \r",
+							"\r",
+							"        if (requestBody.address.geolocation.lat) {\r",
+							"            pm.test(\"Latitude was updated\", function () {\r",
+							"                pm.expect(jsonData.address.geolocation.lat).to.eql(requestBody.address.geolocation.lat);\r",
+							"            });\r",
+							"        }\r",
+							"                    //Longitude  should be updated correctly if present on the request \r",
+							"        if (requestBody.address.geolocation.long) {\r",
+							"            pm.test(\"Longitude was updated\", function () {\r",
+							"                pm.expect(jsonData.address.geolocation.long).to.eql(requestBody.address.geolocation.long);\r",
+							"            });\r",
+							"        }\r",
+							"    }\r",
+							"}\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							"pm.test(\"Validate that the response is a non-empty object\", function () {\r",
+							"    pm.expect(jsonData).to.be.an('object').and.not.empty;\r",
+							"});\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							"const schema = {\r",
+							"    type: \"object\",\r",
+							"    required: [\"email\", \"address\"],\r",
+							"    properties: {\r",
+							"        email: { type: \"string\", format: \"email\" },\r",
+							"        address: {\r",
+							"            type: \"object\",\r",
+							"            required: [\"city\"],\r",
+							"            properties: {\r",
+							"                city: { type: \"string\" }\r",
+							"            },\r",
+							"            additionalProperties: true\r",
+							"        }\r",
+							"    },\r",
+							"    additionalProperties: true\r",
+							"};\r",
+							"\r",
+							"pm.test(\"Response matches expected JSON schema\", function () {\r",
+							"    pm.expect(tv4.validate(jsonData, schema)).to.be.true;\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"email\": \"updated@example.com\",\r\n  \"address\": {\r\n    \"city\": \"New City\"\r\n  }\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseurl}}users/1",
+					"host": [
+						"{{baseurl}}users"
+					],
+					"path": [
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete User",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const jsonData = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"  pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response is a non-empty object\", function () {\r",
+							"    pm.expect(jsonData).to.be.an(\"object\").and.not.empty;\r",
+							"}); \r",
+							"\r",
+							"const schema = {\r",
+							"    \"type\": \"object\",\r",
+							"    \"properties\": {\r",
+							"        \"address\": {\r",
+							"            \"type\": \"object\",\r",
+							"            \"properties\": {\r",
+							"                \"geolocation\": {\r",
+							"                    \"type\": \"object\",\r",
+							"                    \"properties\": {\r",
+							"                        \"lat\": { \"type\": \"string\" },\r",
+							"                        \"long\": { \"type\": \"string\" }\r",
+							"                    },\r",
+							"                    \"required\": [\"lat\", \"long\"]\r",
+							"                },\r",
+							"                \"city\": { \"type\": \"string\" },\r",
+							"                \"street\": { \"type\": \"string\" },\r",
+							"                \"number\": { \"type\": \"number\" },\r",
+							"                \"zipcode\": { \"type\": \"string\" }\r",
+							"            },\r",
+							"            \"required\": [\"geolocation\", \"city\", \"street\", \"number\", \"zipcode\"]\r",
+							"        },\r",
+							"        \"id\": { \"type\": \"number\" },\r",
+							"        \"email\": { \"type\": \"string\" },\r",
+							"        \"username\": { \"type\": \"string\" },\r",
+							"        \"password\": { \"type\": \"string\" },\r",
+							"        \"name\": {\r",
+							"            \"type\": \"object\",\r",
+							"            \"properties\": {\r",
+							"                \"firstname\": { \"type\": \"string\" },\r",
+							"                \"lastname\": { \"type\": \"string\" }\r",
+							"            },\r",
+							"            \"required\": [\"firstname\", \"lastname\"]\r",
+							"        },\r",
+							"        \"phone\": { \"type\": \"string\" },\r",
+							"        \"__v\": { \"type\": \"number\" }\r",
+							"    },\r",
+							"    \"required\": [\"address\", \"id\", \"email\", \"username\", \"password\", \"name\", \"phone\", \"__v\"]\r",
+							"};\r",
+							"\r",
+							"pm.test(\"Response matches expected JSON schema\", function () {\r",
+							"      pm.expect(jsonData).to.have.jsonSchema(schema);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Deleted user's name matches original data\", function () {\r",
+							"    const expected_firstname = pm.collectionVariables.get(\"expected_firstname\");\r",
+							"    \r",
+							"        pm.expect(jsonData.name.firstname).to.eql(expected_firstname);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"\r",
+							"// pm.test(\"Validate that the Deleted user ID matches requested ID\", function () {\r",
+							"//     // const userId = pm.variables.get(\"User_id\");\r",
+							"    \r",
+							"//     // if (jsonData.id) {\r",
+							"//     //     pm.expect(jsonData.id.toString()).to.eql(userId.toString());\r",
+							"//     // }\r",
+							"//     pm.expect(jsonData.id).to.be.a(\"number\").to.eql(1);\r",
+							"// });\r",
+							"\r",
+							"\r",
+							"\r",
+							"pm.test(\"Validate that the Email is in valid format\", function () {\r",
+							"    const emailRegex = /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/;\r",
+							"    pm.expect(emailRegex.test(jsonData.email)).to.be.true;\r",
+							"});\r",
+							"\r",
+							"\r",
+							"\r",
+							"pm.test(\"Validate the Address structure is valid\", function () {\r",
+							"    const addr = pm.response.json().address;\r",
+							"    pm.expect(addr).to.have.property(\"city\");\r",
+							"    pm.expect(addr).to.have.property(\"street\");\r",
+							"    pm.expect(addr).to.have.property(\"number\");\r",
+							"    pm.expect(addr).to.have.property(\"zipcode\");\r",
+							"    pm.expect(addr).to.have.property(\"geolocation\");\r",
+							"    pm.expect(addr.geolocation).to.have.property(\"lat\");\r",
+							"    pm.expect(addr.geolocation).to.have.property(\"long\");\r",
+							"});\r",
+							"\r",
+							"\r",
+							"\r",
+							"pm.test(\"Validate that All required keys  are exist\", function () {\r",
+							"    const user = pm.response.json();\r",
+							"    pm.expect(user).to.have.all.keys(\"address\", \"id\", \"email\", \"username\", \"password\", \"name\", \"phone\", \"__v\");\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Validate that the User ID is a positive number\", function () {\r",
+							"    const id = pm.response.json().id;\r",
+							"    pm.expect(id).to.be.a(\"number\");\r",
+							"    pm.expect(id).to.be.above(0);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Validate that the Full name is valid\", function () {\r",
+							"    const name = pm.response.json().name;\r",
+							"    pm.expect(name.firstname).to.be.a(\"string\").and.not.empty;\r",
+							"    pm.expect(name.lastname).to.be.a(\"string\").and.not.empty;\r",
+							"});\r",
+							"\r",
+							"\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.collectionVariables.set(\"expected_firstname\",\"john\");\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseurl}}users/1",
+					"host": [
+						"{{baseurl}}users"
+					],
+					"path": [
+						"1"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "User_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "email",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "username",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "password",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "firstname",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "lastname",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "city",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "street",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "number",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "zipcode",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "lat",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "long",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "phone",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "expected_firstname",
+			"value": ""
+		}
+	]
+}
